@@ -1,0 +1,62 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+library(genogamesh)
+```
+
+# genogamesh
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+
+## installation
+
+You can install the development version of `genogamesh` like so:
+
+``` r
+devtools::install_github("william-swl/genogamesh")
+```
+
+## S4 classes in `genogamesh`
+### mutstr
+- a S4 class to manipulate mutation strings
+- support set operations
+
+``` {r mutstr}
+raw_mut_string <- c(
+  variant1 = "T10I,D20N,Q30E,A40T,P50L,G60R",
+  variant2 = "T10I,D20-,Q30E,A40T,P50L,G60R,S80R",
+  variant3 = "T10A,D20G,Q30E,A40T,P50L,G60R"
+)
+
+m <- mutstr(raw_mut_string, sep = ",")
+
+m
+
+names(m)
+
+mstr(m)
+
+mut(m)
+
+m[1:2]
+
+m[[2]]
+
+intersect(m, m[1])
+
+setdiff(m, m[1])
+
+union(m, m[1])
+```

@@ -1,0 +1,22 @@
+Package: genogamesh
+Title: Process genomics data
+Version: 0.0.1
+Authors@R: 
+    person("William", "Song", , "william_swl@163.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: Process genomics data
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    baizer,
+    Biostrings,
+    dplyr,
+    magrittr,
+    tibble
+Suggests: 
+    covr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
