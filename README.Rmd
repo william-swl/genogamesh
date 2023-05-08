@@ -28,6 +28,28 @@ You can install the development version of `genogamesh` like so:
 devtools::install_github("william-swl/genogamesh")
 ```
 
+## parse bioinfomatic data
+
+- parse the output of SingleR
+
+```{r parse_bio-parse_SingleR}
+# SingleR(test, ref) %>% parse_SingleR()
+```
+
+
+## shortcuts for bioinfomatic pipelines
+
+- add SingleR celltype annotation for Seurat object
+```{r shortcut_bio-SingleR_SE}
+# SE <- SingleR_SE(SE, SEref)
+```
+
+- reduction from raw Seurat object created by read count matrix, including
+normalization, variable features calling, scaling, PCA and UMAP
+```{r shortcut_bio-reduction_SE}
+# SE <- reduction_SE(SE)
+```
+
 ## S4 classes in `genogamesh`
 ### mutstr
 - a S4 class to manipulate mutation strings

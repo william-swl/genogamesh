@@ -14,6 +14,30 @@ You can install the development version of `genogamesh` like so:
 devtools::install_github("william-swl/genogamesh")
 ```
 
+## parse bioinfomatic data
+
+- parse the output of SingleR
+
+``` r
+# SingleR(test, ref) %>% parse_SingleR()
+```
+
+## shortcuts for bioinfomatic pipelines
+
+- add SingleR celltype annotation for Seurat object
+
+``` r
+# SE <- SingleR_SE(SE, SEref)
+```
+
+- reduction from raw Seurat object created by read count matrix,
+  including normalization, variable features calling, scaling, PCA and
+  UMAP
+
+``` r
+# SE <- reduction_SE(SE)
+```
+
 ## S4 classes in `genogamesh`
 
 ### mutstr
