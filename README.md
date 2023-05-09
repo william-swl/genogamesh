@@ -22,6 +22,20 @@ devtools::install_github("william-swl/genogamesh")
 # SingleR(test, ref) %>% parse_SingleR()
 ```
 
+- parse somatic hypermutation from igblast output
+
+``` r
+# parse_IgBlast_shm('igblast_out.txt')
+```
+
+- parse sequences from CellRanger vdj output
+
+``` r
+# parse_CellRanger_vdjseq(df)
+# parse_CellRanger_vdjseq(df, file='seq.csv')
+# parse_CellRanger_vdjseq(df, file='seq.fa', fa_content='seq_orf_nt')
+```
+
 ## shortcuts for bioinfomatic pipelines
 
 - add SingleR celltype annotation for Seurat object
@@ -36,6 +50,13 @@ devtools::install_github("william-swl/genogamesh")
 
 ``` r
 # SE <- reduction_SE(SE)
+```
+
+- translate nucleotides into amino acids from the first character
+
+``` r
+nt2aa(c("ATGAAA", "TTGCCC", "CTGTTT"))
+#> [1] "MK" "LP" "LF"
 ```
 
 ## S4 classes in `genogamesh`
