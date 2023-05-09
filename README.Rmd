@@ -36,6 +36,18 @@ devtools::install_github("william-swl/genogamesh")
 # SingleR(test, ref) %>% parse_SingleR()
 ```
 
+-  parse somatic hypermutation from igblast output
+
+```{r parse_bio-parse_IgBlast_shm}
+# parse_IgBlast_shm('igblast_out.txt')
+```
+
+- parse sequences from CellRanger vdj output
+```{r parse_bio-parse_CellRanger_vdjseq}
+# parse_CellRanger_vdjseq(df)
+# parse_CellRanger_vdjseq(df, file='seq.csv')
+# parse_CellRanger_vdjseq(df, file='seq.fa', fa_content='seq_orf_nt')
+```
 
 ## shortcuts for bioinfomatic pipelines
 
@@ -49,6 +61,13 @@ normalization, variable features calling, scaling, PCA and UMAP
 ```{r shortcut_bio-reduction_SE}
 # SE <- reduction_SE(SE)
 ```
+
+- translate nucleotides into amino acids from the first character
+
+```{r shortcut_bio-nt2aa}
+nt2aa(c("ATGAAA", "TTGCCC", "CTGTTT"))
+```
+
 
 ## S4 classes in `genogamesh`
 ### mutstr

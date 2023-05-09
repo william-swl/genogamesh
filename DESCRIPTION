@@ -1,6 +1,6 @@
 Package: genogamesh
 Title: Process genomics data
-Version: 0.0.2
+Version: 0.0.3
 Authors@R: 
     person("William", "Song", , "william_swl@163.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -15,9 +15,11 @@ Imports:
     Biostrings,
     dplyr,
     magrittr,
+    purrr,
     rlang,
     Seurat,
     SingleR,
+    stringr,
     SummarizedExperiment,
     tibble,
     tidyr

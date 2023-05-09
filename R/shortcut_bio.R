@@ -73,3 +73,23 @@ reduction_SE <- function(x, use_dim = 30) { # nolint
 
   return(res)
 }
+
+
+
+
+#' translate nucleotides into amino acids from the first character
+#'
+#' @param x nucleotides characters
+#'
+#' @return amino acids characters
+#' @export
+#'
+#' @examples nt2aa(c("ATGAAA", "TTGCCC", "CTGTTT"))
+nt2aa <- function(x) {
+  ds <- Biostrings::DNAStringSet(x)
+  res <- Biostrings::translate(ds,
+    no.init.codon = TRUE, if.fuzzy.codon = "solve"
+  ) %>%
+    as.character()
+  return(res)
+}
