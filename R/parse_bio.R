@@ -167,7 +167,17 @@ parse_ANARCI_aaseq <- function(x, remove_gap = TRUE) {
   aa_cols <- colnames(x) %>% str_subset("^\\d+")
   res <- x %>%
     dplyr::select(sequence_id = "Id", dplyr::all_of(aa_cols)) %>%
-    # trans NA to -
+    # trans TRUE, FALSE to the real character T, F
+    dplyr::mutate(
+      dplyr::across(
+        dplyr::where(is.logical),
+        ~ case_when(
+          .x == TRUE ~ "T", .x == FALSE ~ "F",
+          is.na(.x) ~ "-", TRUE ~ as.character(.x)
+        )
+      )
+    ) %>%
+    # trans NA to -, to avoid NA in sequence
     dplyr::mutate(
       dplyr::across(dplyr::all_of(aa_cols), ~ ifelse(is.na(.x), "-", .x))
     ) %>%
