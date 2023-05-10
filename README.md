@@ -36,6 +36,12 @@ devtools::install_github("william-swl/genogamesh")
 # parse_CellRanger_vdjseq(df, file='seq.fa', fa_content='seq_orf_nt')
 ```
 
+- parse sequences from ANARCI vdj output
+
+``` r
+# parse_ANARCI_aaseq(df)
+```
+
 ## shortcuts for bioinfomatic pipelines
 
 - add SingleR celltype annotation for Seurat object

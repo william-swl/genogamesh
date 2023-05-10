@@ -152,3 +152,33 @@ parse_CellRanger_vdjseq <- function(x, file = NULL, fa_content = "sequence") {
     return(res)
   }
 }
+
+
+
+#' parse sequences from ANARCI vdj output
+#'
+#' @param x tibble from anarci_H.csv or anarci_KL.csv
+#' @param remove_gap remove the gap caused by numbering, default as TRUE
+#'
+#' @return tibble
+#' @export
+#'
+parse_ANARCI_aaseq <- function(x, remove_gap = TRUE) {
+  aa_cols <- colnames(x) %>% str_subset("^\\d+")
+  res <- x %>%
+    dplyr::select(sequence_id = "Id", dplyr::all_of(aa_cols)) %>%
+    # trans NA to -
+    dplyr::mutate(
+      dplyr::across(dplyr::all_of(aa_cols), ~ ifelse(is.na(.x), "-", .x))
+    ) %>%
+    tidyr::unite("seq_align_aa", dplyr::all_of(aa_cols), sep = "")
+
+  if (remove_gap == TRUE) {
+    res <- res %>% dplyr::mutate(
+      seq_align_aa =
+        str_replace_all(.data[["seq_align_aa"]], "-", "")
+    )
+  }
+
+  return(res)
+}

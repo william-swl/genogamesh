@@ -2,7 +2,6 @@
 "_PACKAGE"
 
 ## usethis namespace: start
-#' @importFrom baizer %in%
 #' @importFrom baizer %nin%
 #' @importFrom purrr map_chr
 #' @importFrom purrr map_dbl
