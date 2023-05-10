@@ -51,7 +51,8 @@ devtools::install_github("william-swl/genogamesh")
 
 - parse sequences from ANARCI vdj output
 ```{r parse_bio-parse_ANARCI_aaseq}
-# parse_ANARCI_aaseq(df)
+# parse_ANARCI_aaseq(df, chain='H')
+# parse_ANARCI_aaseq(df, chain='L')
 ```
 
 

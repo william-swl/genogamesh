@@ -159,11 +159,16 @@ parse_CellRanger_vdjseq <- function(x, file = NULL, fa_content = "sequence") {
 #'
 #' @param x tibble from anarci_H.csv or anarci_KL.csv
 #' @param remove_gap remove the gap caused by numbering, default as TRUE
+#' @param chain one of 'H, L', for heavy chain or light chain
+#' @param scheme antibody numbering scheme, one of 'imgt, chothia'
+#' @param number_table custom antibody numbering system, please input a tibble
+#' with three columns: region, start, end.
 #'
 #' @return tibble
 #' @export
 #'
-parse_ANARCI_aaseq <- function(x, remove_gap = TRUE) {
+parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
+                               scheme = "imgt", number_table = NULL) {
   aa_cols <- colnames(x) %>% str_subset("^\\d+")
   res <- x %>%
     dplyr::select(sequence_id = "Id", dplyr::all_of(aa_cols)) %>%
@@ -180,14 +185,51 @@ parse_ANARCI_aaseq <- function(x, remove_gap = TRUE) {
     # trans NA to -, to avoid NA in sequence
     dplyr::mutate(
       dplyr::across(dplyr::all_of(aa_cols), ~ ifelse(is.na(.x), "-", .x))
+    )
+
+
+  # region seq aa
+  region <- res %>%
+    pivot_longer(-"sequence_id", names_to = "numbering", values_to = "aa") %>%
+    dplyr::mutate(numbering = factor(.data[["numbering"]], aa_cols)) %>%
+    dplyr::mutate(site = str_extract(.data[["numbering"]], "\\d+") %>%
+      as.double()) %>%
+    dplyr::arrange(.data[["sequence_id"]], .data[["numbering"]])
+
+  if (is.null(number_table)) {
+    number_table <- ab_numbering %>%
+      dplyr::filter(scheme == .env[["scheme"]], chain == .env[["chain"]])
+  }
+
+  region <- region %>%
+    left_join(number_table,
+      by = dplyr::join_by(between(site, start, end, bounds = "[]"))
     ) %>%
-    tidyr::unite("seq_align_aa", dplyr::all_of(aa_cols), sep = "")
+    dplyr::filter(!is.na(region)) %>%
+    dplyr::arrange(region)
+
+  region <- region %>%
+    group_split(.data[["sequence_id"]]) %>%
+    map_dfr(~ dplyr::summarise(.x,
+      aa = str_c(aa, collapse = ""),
+      .by = c("sequence_id", "region")
+    )) %>%
+    pivot_wider(names_from = "region", values_from = "aa") %>%
+    rename_at(
+      which(colnames(.) %in% dplyr::pull(number_table, "region")),
+      ~ str_c(.x, "_aa")
+    )
+
+  # V-domain seq aa
+  res <- res %>% tidyr::unite("seq_align_aa", dplyr::all_of(aa_cols), sep = "")
+
+  res <- left_join(region, res, by = "sequence_id")
 
   if (remove_gap == TRUE) {
-    res <- res %>% dplyr::mutate(
-      seq_align_aa =
-        str_replace_all(.data[["seq_align_aa"]], "-", "")
-    )
+    res <- res %>% dplyr::mutate(dplyr::across(
+      ends_with("_aa"),
+      ~ str_replace_all(.x, "-", "")
+    ))
   }
 
   return(res)
