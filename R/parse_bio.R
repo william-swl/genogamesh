@@ -222,7 +222,7 @@ parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
     )) %>%
     pivot_wider(names_from = "region", values_from = "aa") %>%
     rename_at(
-      dplyr::pull(number_table, "region"),
+      dplyr::pull(number_table, "region") %>% unfactor,
       ~ str_c(.x, "_aa")
     )
 
