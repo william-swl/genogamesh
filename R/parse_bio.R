@@ -90,6 +90,12 @@ parse_IgBlast_shm <- function(igblast_fmt7) {
   }
 
   res <- Ltxt %>% map_dfr(parse_mut)
+
+  # rename
+  res <- res %>% rename_at(
+    str_subset(colnames(.), "^FR\\d"),
+    ~ str_replace(.x, "FR", "FWR")
+  )
   return(res)
 }
 
@@ -216,7 +222,7 @@ parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
     )) %>%
     pivot_wider(names_from = "region", values_from = "aa") %>%
     rename_at(
-      which(colnames(.) %in% dplyr::pull(number_table, "region")),
+      dplyr::pull(number_table, "region"),
       ~ str_c(.x, "_aa")
     )
 
