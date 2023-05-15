@@ -205,6 +205,8 @@ parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
   if (is.null(number_table)) {
     number_table <- ab_numbering %>%
       dplyr::filter(scheme == .env[["scheme"]], chain == .env[["chain"]])
+  } else if ("chain" %in% colnames(number_table)) {
+    number_table <- number_table %>% dplyr::filter(chain == .env[["chain"]])
   }
 
   region <- region %>%
@@ -222,7 +224,7 @@ parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
     )) %>%
     pivot_wider(names_from = "region", values_from = "aa") %>%
     rename_at(
-      dplyr::pull(number_table, "region") %>% unfactor,
+      dplyr::pull(number_table, "region") %>% as.character(),
       ~ str_c(.x, "_aa")
     )
 

@@ -1,6 +1,6 @@
 Package: genogamesh
 Title: Process genomics data
-Version: 0.0.4
+Version: 0.0.4.9000
 Authors@R: 
     person("William", "Song", , "william_swl@163.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
