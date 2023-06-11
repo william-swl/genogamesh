@@ -174,7 +174,8 @@ parse_CellRanger_vdjseq <- function(x, file = NULL, fa_content = "sequence") {
 #' @export
 #'
 parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
-                               scheme = "imgt", number_table = NULL) {
+                               scheme = "imgt", number_table = NULL,
+                               keep_number = FALSE) {
   aa_cols <- colnames(x) %>% str_subset("^\\d+")
   res <- x %>%
     dplyr::select(sequence_id = "Id", dplyr::all_of(aa_cols)) %>%
@@ -192,7 +193,6 @@ parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
     dplyr::mutate(
       dplyr::across(dplyr::all_of(aa_cols), ~ ifelse(is.na(.x), "-", .x))
     )
-
 
   # region seq aa
   region <- res %>%
@@ -229,7 +229,7 @@ parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
     )
 
   # V-domain seq aa
-  res <- res %>% tidyr::unite("seq_align_aa", dplyr::all_of(aa_cols), sep = "")
+  res <- res %>% tidyr::unite("seq_align_aa", dplyr::all_of(aa_cols), sep = "", remove = !keep_number)
 
   res <- left_join(region, res, by = "sequence_id")
 

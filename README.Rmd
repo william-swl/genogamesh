@@ -53,6 +53,9 @@ devtools::install_github("william-swl/genogamesh")
 ```{r parse_bio-parse_ANARCI_aaseq}
 # parse_ANARCI_aaseq(df, chain='H')
 # parse_ANARCI_aaseq(df, chain='L')
+
+# keep the ab numbering
+# parse_ANARCI_aaseq(df, chain='H', keep_number=TRUE)
 ```
 
 

@@ -9,7 +9,8 @@ parse_ANARCI_aaseq(
   chain,
   remove_gap = TRUE,
   scheme = "imgt",
-  number_table = NULL
+  number_table = NULL,
+  keep_number = FALSE
 )
 }
 \arguments{

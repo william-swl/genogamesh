@@ -39,7 +39,11 @@ devtools::install_github("william-swl/genogamesh")
 - parse sequences from ANARCI vdj output
 
 ``` r
-# parse_ANARCI_aaseq(df)
+# parse_ANARCI_aaseq(df, chain='H')
+# parse_ANARCI_aaseq(df, chain='L')
+
+# keep the ab numbering
+# parse_ANARCI_aaseq(df, chain='H', keep_number=TRUE)
 ```
 
 ## shortcuts for bioinfomatic pipelines
