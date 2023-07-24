@@ -22,6 +22,15 @@ parse_SingleR <- function(x) { # nolint
     baizer::reg_join(.data[["labels"]], "[\\da-zA-Z]") ==
       baizer::reg_join(.data[["celltype"]], "[\\da-zA-Z]")
   )
+
+  # celltype in colnames have some duplication
+  # e.g. "scores.NK.cells..NK.H..MCMV1." and
+  # "scores.NK.cells..NK.H.MCMV1." in mouse reference
+  res <- res %>%
+    dplyr::arrange(.data[["cell"]], dplyr::desc(.data[["s"]])) %>%
+    dplyr::distinct(.data[["cell"]], .keep_all = TRUE)
+
+  # select columns
   res <- res %>%
     dplyr::select(-"celltype") %>%
     dplyr::select(dplyr::all_of(c("cell",
@@ -229,7 +238,9 @@ parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
     )
 
   # V-domain seq aa
-  res <- res %>% tidyr::unite("seq_align_aa", dplyr::all_of(aa_cols), sep = "", remove = !keep_number)
+  res <- res %>% tidyr::unite("seq_align_aa", dplyr::all_of(aa_cols),
+    sep = "", remove = !keep_number
+  )
 
   res <- left_join(region, res, by = "sequence_id")
 
