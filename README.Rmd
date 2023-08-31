@@ -64,7 +64,7 @@ a single record row of vcf file, and can not process indels
 
 ```{r parse_bio-parse_vcf}
 # vcf <- read_vcf(...)
-# fa <- read_fa(..)
+# fa <- read_fasta(..)
 # gff <- read_gff(...)
 # parse_vcf(vcf, fa, gff)
 ```

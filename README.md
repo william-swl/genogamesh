@@ -53,7 +53,7 @@ devtools::install_github("william-swl/genogamesh")
 
 ``` r
 # vcf <- read_vcf(...)
-# fa <- read_fa(..)
+# fa <- read_fasta(..)
 # gff <- read_gff(...)
 # parse_vcf(vcf, fa, gff)
 ```
