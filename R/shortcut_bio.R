@@ -131,8 +131,8 @@ antigen_map <- function(data, sera_meta = NULL, ag_meta = NULL,
     t()
 
   # construct map
-  map <- Racmas::acmap(titer_table = data) %>%
-    Racmas::optimizeMap(
+  map <- Racmacs::acmap(titer_table = data) %>%
+    Racmacs::optimizeMap(
       map = .,
       number_of_dimensions = 2,
       number_of_optimizations = n_optim,
@@ -141,10 +141,10 @@ antigen_map <- function(data, sera_meta = NULL, ag_meta = NULL,
     )
 
   # extract coords
-  ag_data <- Racmas::agCoords(map, 1) %>%
+  ag_data <- Racmacs::agCoords(map, 1) %>%
     as_tibble(rownames = "id") %>%
     dplyr::mutate(datatype = "ag")
-  sera_data <- Racmas::srCoords(map, 1) %>%
+  sera_data <- Racmacs::srCoords(map, 1) %>%
     as_tibble(rownames = "id") %>%
     dplyr::mutate(datatype = "sera")
   if (!is.null(sera_meta)) {
