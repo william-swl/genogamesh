@@ -253,3 +253,112 @@ parse_ANARCI_aaseq <- function(x, chain, remove_gap = TRUE,
 
   return(res)
 }
+
+
+
+#' parse vcf file with the help of reference genome and annotations.
+#' It is still under development, which can not process more than 3 nt
+#' substitutions in a single record row of vcf file, and can not process indels
+#'
+#' @param vcf `vcfR` object from `read_vcf`
+#' @param fa `DNAStringSet` object from `read_fasta`
+#' @param gff `gff` tibble from `read_gff`
+#'
+#' @return tibble
+#' @export
+#'
+parse_vcf <- function(vcf, fa, gff) {
+  # get gff info
+  vcf_fmt <- vcf@gt[, 2] %>%
+    str_split(":") %>%
+    baizer::list2df(
+      rownames = FALSE,
+      colnames = vcf@gt[1, 1] %>% str_split(":") %>% unlist()
+    )
+
+  res <- as_tibble(vcf@fix) %>%
+    dplyr::mutate(POS = as.numeric(.data[["POS"]])) %>%
+    bind_cols(vcf_fmt) %>%
+    left_join(gff,
+      by = join_by(
+        "CHROM" == "seqid",
+        between("POS", "start", "end", bounds = "[]")
+      )
+    )
+  # fetch codon range
+  res <- res %>%
+    dplyr::mutate(
+      codon_range =
+        codon_range(
+          .data[["POS"]],
+          .data[["start"]],
+          .data[["end"]]
+        )
+    ) %>%
+    tidyr::separate(codon_range, into = c("codon_start", "codon_end"))
+
+  # fetch codon ref
+  res <- res %>% dplyr::mutate(
+    codon_ref = as.character(fa[.data[["CHROM"]]]) %>%
+      str_sub(.data[["codon_start"]], .data[["codon_end"]])
+  )
+
+  # alt codon index
+  res <- res %>%
+    dplyr::mutate(
+      codon_idx_start = codon_index(
+        .data[["POS"]], .data[["start"]], .data[["end"]]
+      ),
+      codon_idx_end =
+        codon_index(
+          .data[["POS"]], .data[["start"]],
+          .data[["end"]]
+        ) + nchar(.data[["ALT"]]) - 1
+    ) %>%
+    dplyr::mutate(
+      codon_overflow =
+        ifelse(.data[["codon_idx_end"]] > 3, TRUE, FALSE)
+    )
+
+  # alt codon
+  res <- res %>% dplyr::mutate(
+    codon_alt =
+      baizer::str_replace_loc(
+        .data[["codon_ref"]], .data[["codon_idx_start"]],
+        .data[["codon_idx_end"]], .data[["ALT"]]
+      )
+  )
+
+  # aa index
+  res <- res %>% dplyr::mutate(
+    aa_index = aa_index(.data[["POS"]], .data[["start"]], .data[["end"]])
+  )
+
+  # aa mut
+  res <- res %>% dplyr::mutate(
+    nonsynonymous = nt2aa(.data[["codon_ref"]]) != nt2aa(.data[["codon_alt"]]),
+    aa_mut = str_c(
+      nt2aa(.data[["codon_ref"]]),
+      .data[["aa_index"]], nt2aa(.data[["codon_alt"]])
+    )
+  )
+
+  # select and relocate
+  res <- res %>%
+    dplyr::select(-c(
+      "ID", "source", "start", "end", "score",
+      "strand", "phase", "codon_start", "codon_end",
+      "codon_idx_start", "codon_idx_end", "aa_index"
+    )) %>%
+    dplyr::relocate("codon_overflow", .after = -1)
+
+  n_overflow <- sum(res$codon_overflow)
+  if (n_overflow > 0) {
+    cat(str_glue("{n_overflow} records codon overflow,
+                 please check by parse_vcf(...) %>% filter() == TRUE !"))
+  } else {
+    res <- res %>% dplyr::select(-"codon_overflow")
+  }
+
+  return(res)
+}

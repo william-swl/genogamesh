@@ -46,6 +46,18 @@ devtools::install_github("william-swl/genogamesh")
 # parse_ANARCI_aaseq(df, chain='H', keep_number=TRUE)
 ```
 
+- parse vcf file with the help of reference genome and annotations. It
+  is still under development, which can not process more than 3 nt
+  substitutions in a single record row of vcf file, and can not process
+  indels
+
+``` r
+# vcf <- read_vcf(...)
+# fa <- read_fa(..)
+# gff <- read_gff(...)
+# parse_vcf(vcf, fa, gff)
+```
+
 ## shortcuts for bioinfomatic pipelines
 
 - add SingleR celltype annotation for Seurat object
@@ -68,6 +80,22 @@ devtools::install_github("william-swl/genogamesh")
 nt2aa(c("ATGAAA", "TTGCCC", "CTGTTT"))
 #> [1] "MK" "LP" "LF"
 ```
+
+- build antigen map from sera titer data
+
+``` r
+# antigen_map(data, sera_meta, ag_meta, seed=14)
+```
+
+## IO
+
+    read_fasta()
+
+    write_fasta()
+
+    read_vcf()
+
+    read_gff()
 
 ## S4 classes in `genogamesh`
 

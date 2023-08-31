@@ -93,3 +93,66 @@ nt2aa <- function(x) {
     as.character()
   return(res)
 }
+
+
+#' build antigen map from sera titer data
+#'
+#' @param data titer tibble, colnames should be `id, antigen1, antigen2, ...`
+#' @param sera_meta metadata of sera, colnames should be `id, arg1, arg2, ...`
+#' @param ag_meta metadata of antigen, colnames should be `id, arg1, arg2, ...`
+#' @param value_lim titer value limitation, default as `c(0, Inf)`
+#' @param n_optim optimization runs to perform
+#' @param seed random seed
+#'
+#' @return tibble
+#' @export
+#'
+antigen_map <- function(data, sera_meta = NULL, ag_meta = NULL,
+                        value_lim = c(0, Inf),
+                        n_optim = 500, seed = NULL) {
+  if (!is.null(seed)) {
+    set.seed(seed)
+  }
+
+
+  # prepare data
+  data <- data %>%
+    baizer::c2r("id") %>%
+    mutate_all(~ ifelse(.x < value_lim[1], value_lim[1], .x)) %>%
+    mutate_all(~ ifelse(.x > value_lim[2], value_lim[2], .x)) %>%
+    mutate_all(as.character) %>%
+    mutate_all(~ ifelse(is.na(.x), "*", .x)) %>%
+    mutate_all(~ ifelse(.x == as.character(value_lim[1]),
+      str_c("<", value_lim[1]), .x
+    )) %>%
+    mutate_all(~ ifelse(.x == as.character(value_lim[2]),
+      str_c(">", value_lim[2]), .x
+    )) %>%
+    t()
+
+  # construct map
+  map <- Racmas::acmap(titer_table = data) %>%
+    Racmas::optimizeMap(
+      map = .,
+      number_of_dimensions = 2,
+      number_of_optimizations = n_optim,
+      minimum_column_basis = "none",
+      options = list(ignore_disconnected = TRUE)
+    )
+
+  # extract coords
+  ag_data <- Racmas::agCoords(map, 1) %>%
+    as_tibble(rownames = "id") %>%
+    dplyr::mutate(datatype = "ag")
+  sera_data <- Racmas::srCoords(map, 1) %>%
+    as_tibble(rownames = "id") %>%
+    dplyr::mutate(datatype = "sera")
+  if (!is.null(sera_meta)) {
+    sera_data <- sera_data %>% left_join(sera_meta, by = "id")
+  }
+  if (!is.null(ag_meta)) {
+    ag_data <- ag_data %>% left_join(ag_meta, by = "id")
+  }
+
+  return(bind_rows(sera_data, ag_data))
+}
